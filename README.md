@@ -1,5 +1,5 @@
 # TF-IDF KeywordsSuggest - Version Alpha 0.1 Licence GPL 3
-Version 0.1 : change keywordsuggest.py due to change in googlesearch library . Minor bug fixed.
+Version 0.1 : change tfidfkeywordsuggest.py due to change in googlesearch library . Minor bug fixed.
 
 <p align="center">
    <img src="https://user-images.githubusercontent.com/26166630/63529711-703c0200-c505-11e9-94b8-f56cc3a92727.jpg">
@@ -99,7 +99,7 @@ FOR /F "delims=~" %f in (requirements.txt) DO conda install --yes "%f" || pip in
 ![AnacondaPrompt](https://user-images.githubusercontent.com/26166630/63533591-64543e00-c50d-11e9-9942-92a0301b4e0b.jpg)
 
 
-Next launch Spyder and open the main Python file keywordssuggest.py
+Next launch Spyder and open the main Python file tfidfkeywordssuggest.py
 
 ![spyder-keywordssuggest](https://user-images.githubusercontent.com/26166630/63534394-5e5f5c80-c50f-11e9-8ffa-34b7dbe76897.jpg)
 
