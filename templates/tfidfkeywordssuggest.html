@@ -1,0 +1,134 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %} 
+
+{% block title %}
+TF-IDF Keywords Suggest
+{% endblock %}
+
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{{url_for('index')}}"><img src="{{url_for('static', filename='Oeil_Anakeyn.jpg')}}", align="left", width=30 /></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+          <!--
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            -->
+            <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+	<!-- Left Menu -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">TF-IDF Keyword Suggest <span class="sr-only">(current)</span></a></li>
+            <!--
+            <li><a href="#">Archives</a></li>
+            -->
+          </ul>
+          <ul class="nav nav-sidebar">
+          </ul>
+          <!--
+          <ul class="nav nav-sidebar">
+          {% if role == 0 %}
+             <li><a href="">Parameters</a></li>
+           {% endif %}
+          </ul>
+          -->
+        </div>
+	
+		
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">Welcome, {{ name }} </h1>
+		  <div class="row placeholders">
+			<img src="{{url_for('static', filename='Anakeyn_Rectangle.jpg')}}" />
+            {% if limitReached == 1 %}
+    			<h3 class="limit-Reached">Limit Reached!</h3> 
+            {% endif %}
+            {% if limitReached == 0 %}
+			 <form class="form-signin" method="POST" enctype=multipart/form-data  action="{{ url_for('tfidfkeywordssuggest') }}">
+				{{ form.hidden_tag() }}
+				{{ wtf.form_field(form.keyword) }} {{ wtf.form_field(form.tldLang) }} <button class="btn btn-lg btn-primary btn-block" type="submit">Search</button>
+			</form>
+            {% endif %}
+		
+<h3 class="progress-title"> </h3>
+<div class="progress" style="height: 22px; margin: 10px;">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0"
+         aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+        <span class="progress-bar-label">0%</span>
+    </div>
+</div>
+
+<div id="myResults" style="visibility:hidden;" align="center">
+<table cellpadding="10" cellspacing="10">
+    <tr><td><a href="/popAllCSV">Download most {{ MaxResults }} popular expressions among Urls crawled</a></td><td width="10%"> </td><td><a href="/oriAllCSV">Download {{ MaxResults }} original expressions among Urls crawled</a></td></tr>
+    <tr><td><a href="/pop1CSV">Download most {{ MaxResults }} popular 1 word expressions  among Urls crawled </a></td><td width="10%"> </td><td><a href="/ori1CSV">Download {{ MaxResults }} original 1 word expressions among Urls crawled</a></td></tr>
+    <tr><td><a href="/pop2CSV">Download most {{ MaxResults }} popular 2 words expressions  among Urls crawled </a></td><td width="10%"> </td><td><a href="/ori2CSV">Download {{ MaxResults }} original 2 words expressions among Urls crawled</a></td></tr>
+    <tr><td><a href="/pop3CSV">Download most {{ MaxResults }} popular 3 words  expressions  among Urls crawled</a></td><td width="10%"> </td><td><a href="/ori3CSV">Download {{ MaxResults }} original 3 words expressions among Urls crawled</a></td></tr>
+    <tr><td><a href="/pop4CSV">Download most {{ MaxResults }} popular 4 words expressions  among Urls crawled</a></td><td width="10%"> </td><td><a href="/ori4CSV">Download {{ MaxResults }} original 4 words expressions among Urls crawled</a></td></tr>
+    <tr><td><a href="/pop5CSV">Download most {{ MaxResults }} popular 5 words expressions  among Urls crawled</a></td><td width="10%"> </td><td><a href="/ori5CSV">Download {{ MaxResults }} original 5 words expressions among Urls crawled</a></td></tr>
+    <tr><td><a href="/pop6CSV">Download most {{ MaxResults }} popular 6 words expressions  among Urls crawled </a></td><td width="10%"> </td><td><a href="/ori6CSV">Download {{ MaxResults }} original 6 words expressions among Urls crawled</a></td></tr>
+ </table>
+
+</div>
+		
+          </div>
+
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='tfidfkeywordssuggest.css')}}">
+<script>
+	var source = new EventSource("/progress");
+	source.onmessage = function(event) {
+		$('.progress-bar').css('width', event.data+'%').attr('aria-valuenow', event.data);
+		$('.progress-bar-label').text(event.data+'%');
+        if(event.data ==-1 ){
+			$('.progress-title').text('You reached your day search limit - Please come back tomorrow!');
+			source.close()
+		}
+        if(event.data >0 && event.data < 50 ){
+			$('.progress-title').text('Search in Google, please be patient!');
+		}
+    	if(event.data >=50 && event.data < 60 ){
+			$('.progress-title').text('Select Urls to crawl, please be patient!');
+		}
+		if(event.data >=60 && event.data < 70 ){
+			$('.progress-title').text('Crawl Urls, please be patient!');
+		}
+		if(event.data >=70 && event.data < 80 ){
+			$('.progress-title').text('Get content from Urls, please be patient!');
+		}
+		if(event.data >=80 && event.data < 90 ){
+			$('.progress-title').text('Save content from Urls, please be patient!');
+		}
+		if(event.data >=90 && event.data < 100 ){
+			$('.progress-title').text('Create TF-IDF Keywords Files, please be patient!');
+		}			
+		if(event.data >= 100){
+    		$('.progress-title').text('Process Completed - Download your TF-IDF Keywords files');
+    		document.getElementById("myResults").style.visibility = "visible";
+			source.close()
+		}
+	}
+</script>
+{% endblock %}
